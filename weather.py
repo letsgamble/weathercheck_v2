@@ -46,15 +46,6 @@ class WeatherForecast:
 			self.file_empty = True
 			return False
 
-	# def items(self):
-	# 	print('')
-	# 	print('***Generator tupli***')
-	# 	for daily_history in self.full_weather_history:
-	# 		dane = daily_history['valid_date'], daily_history['precip']
-	# 		print(tuple(dane))
-	# 	print('***Generator tupli***')
-	# 	print('')
-
 	def check_for_date(self):
 		if not self.file_empty:
 			for daily_history in self.full_weather_history:
@@ -95,19 +86,42 @@ class WeatherForecast:
 			print(f'Please check your input')
 			print(f'I only store weather info for the next 16 days')
 
+	def __iter__(self):
+		print('')
+		print('***Iterator***')
+		daty = [daily_history['valid_date'] for daily_history in self.full_weather_history]
+		return iter(daty)
 
-	# def __getitem__(self, item):
-	# 	return
-	#
-	# def __setitem__(self, key, value):
-	# 	return
+	def items(self):
+		print('')
+		print('***Tuple generator***')
+		for daily_history in self.full_weather_history:
+			dane = daily_history['valid_date'], daily_history['precip']
+			yield dane
+
+	def __getitem__(self, data):
+		for daily_history in self.full_weather_history:
+			data = daily_history['valid_date'], daily_history['precip']
+			if data[0] == date:
+				return data[1]
 
 
 wf = WeatherForecast(sys.argv[1], 'out.json')
 wf.check_if_date_provided()
 wf.check_for_file()
 wf.read_from_file()
-# wf.items()
+
+for a, b in wf.items():
+	print(a, b)
+
+for date in wf:
+	print(date)
+
+wf.items()
+print('')
+print('Rain for the exact date:')
+print(wf['2022-08-22'])
+print('')
 wf.check_for_date()
 wf.api_data_download()
 wf.if_found()
